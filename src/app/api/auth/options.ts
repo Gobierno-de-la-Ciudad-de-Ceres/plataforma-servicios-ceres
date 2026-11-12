@@ -12,6 +12,7 @@ declare module "next-auth" {
   interface User {
     firstName?: string
     lastName?: string
+    role?: string
   }
   
   interface Session {
@@ -22,6 +23,7 @@ declare module "next-auth" {
       firstName?: string
       lastName?: string
       image?: string
+      role?: string
     }
   }
 }
@@ -31,6 +33,7 @@ declare module "next-auth/jwt" {
     id: string
     firstName?: string
     lastName?: string
+    role?: string
   }
 }
 
@@ -109,6 +112,7 @@ return {
                         name: buildPersonFullName(user.firstName, user.lastName),
                         firstName: normalizePersonNamePart(user.firstName),
                         lastName: normalizePersonNamePart(user.lastName),
+                        role: user.role,
                     }
                 } catch (error) {
                     console.error('Error en autenticación:', error)
@@ -285,6 +289,7 @@ return {
                 token.firstName = normalizePersonNamePart(user.firstName ?? '')
                 token.lastName = normalizePersonNamePart(user.lastName ?? '')
                 token.picture = user.image
+                token.role = user.role
             }
             
             // Para usuarios OAuth, obtener datos de la DB (solo en el primer login)
@@ -298,10 +303,23 @@ return {
                         token.firstName = normalizePersonNamePart(dbUser.firstName)
                         token.lastName = normalizePersonNamePart(dbUser.lastName)
                         token.picture = dbUser.image || token.picture
+                        token.role = dbUser.role
                     }
                 } catch (error) {
                     console.error('Error en jwt callback:', error)
                     // Continuar con los datos del token aunque falle la consulta
+                }
+            }
+
+            if (!token.role && token.id) {
+                try {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: token.id as string },
+                        select: { role: true },
+                    })
+                    if (dbUser) token.role = dbUser.role
+                } catch (error) {
+                    console.error('Error cargando role en jwt:', error)
                 }
             }
             
@@ -314,6 +332,7 @@ return {
                 session.user.firstName = token.firstName
                 session.user.lastName = token.lastName
                 session.user.image = token.picture as string | undefined
+                session.user.role = token.role
             }
             return session
         }

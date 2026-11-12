@@ -27,6 +27,7 @@ model User {
   image               String? // Foto de perfil de OAuth
   contactRequests     ContactRequest[]
   professional        Professional?
+  employer            Employer?
   reviews             Review[]
   verificationTokens  VerificationToken[]
   accounts            Account[]
@@ -216,7 +217,57 @@ model VerificationToken {
 enum UserRole {
   citizen
   professional
+  employer
   admin
+}
+
+enum EmployerTaxIdType {
+  cuit
+  dni
+}
+
+enum JobPostStatus {
+  active
+  closed
+  taken_down
+}
+
+model Employer {
+  id          String            @id @default(uuid())
+  userId      String            @unique
+  companyName String
+  taxId       String
+  taxIdType   EmployerTaxIdType
+  phone       String
+  logoUrl     String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPosts    JobPost[]
+
+  @@map("employers")
+}
+
+model JobPost {
+  id             String        @id @default(uuid())
+  employerId     String
+  companyName    String
+  title          String
+  searchStartsAt DateTime
+  searchEndsAt   DateTime
+  requirements   String        @db.Text
+  contactEmail   String?
+  contactPhone   String?
+  status         JobPostStatus @default(active)
+  takenDownAt    DateTime?
+  takenDownReason String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  employer       Employer      @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([status, searchStartsAt, searchEndsAt])
+  @@index([employerId])
+  @@map("job_posts")
 }
 
 enum ProfessionalStatus {

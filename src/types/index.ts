@@ -12,9 +12,39 @@ export interface User {
   gender?: string; // Género del usuario
   birthDate?: Date;
   location?: string;
-  role?: 'citizen' | 'professional' | 'admin';
+  role?: 'citizen' | 'professional' | 'employer' | 'admin';
   createdAt?: Date;
   verified?: boolean;
+}
+
+export type EmployerTaxIdType = 'cuit' | 'dni';
+
+export type JobPostStatus = 'active' | 'closed' | 'taken_down';
+
+export interface Employer {
+  id: string;
+  companyName: string;
+  taxId: string;
+  taxIdType: EmployerTaxIdType;
+  phone: string;
+  logoUrl: string;
+}
+
+export interface JobPost {
+  id: string;
+  companyName: string;
+  title: string;
+  searchStartsAt: string;
+  searchEndsAt: string;
+  requirements: string;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  status: JobPostStatus;
+  createdAt: string;
+  updatedAt: string;
+  takenDownAt?: string | null;
+  takenDownReason?: string | null;
+  employer?: Pick<Employer, 'id' | 'companyName' | 'logoUrl' | 'phone'>;
 }
 
 // Jerarquía de categorías: grupos principales y subcategorías

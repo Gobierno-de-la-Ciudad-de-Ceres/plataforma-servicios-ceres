@@ -117,7 +117,7 @@ export async function PUT(
     }
 
     // Validar role si se proporciona
-    if (body.role && !['citizen', 'professional', 'admin'].includes(body.role)) {
+    if (body.role && !['citizen', 'professional', 'employer', 'admin'].includes(body.role)) {
       return NextResponse.json(
         { success: false, error: 'validation_error', message: 'Rol inválido' },
         { status: 400 }
@@ -137,7 +137,7 @@ export async function PUT(
 
     // Construir datos de actualización
     const updateData: {
-      role?: 'citizen' | 'professional' | 'admin';
+      role?: 'citizen' | 'professional' | 'employer' | 'admin';
       verified?: boolean;
       firstName?: string;
       lastName?: string;

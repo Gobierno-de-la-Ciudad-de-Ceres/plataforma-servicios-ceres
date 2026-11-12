@@ -432,6 +432,28 @@ Todos los endpoints devuelven errores en formato consistente:
 }
 ```
 
+### Empleos / vacantes
+
+#### `POST /api/admin/job-posts/[id]/take-down`
+Da de baja una vacante publicada por una empresa (`status = taken_down`). Deja de verse en `/empleos`.
+
+**Body (opcional):**
+```json
+{
+  "reason": "Motivo de la baja"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "item": { "...vacante actualizada..." }
+}
+```
+
+---
+
 **Códigos de error comunes:**
 - `unauthorized` (401): API Key faltante o inválida
 - `forbidden` (403): API Key inválida

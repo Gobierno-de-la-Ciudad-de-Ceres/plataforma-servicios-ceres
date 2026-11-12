@@ -59,6 +59,16 @@ export function Footer() {
                   Cómo Funciona
                 </Link>
               </li>
+              <li>
+                <Link href="/empleos" className="hover:text-primary transition-colors">
+                  Empleos
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/registro-empresa" className="hover:text-primary transition-colors">
+                  Publicar empleo
+                </Link>
+              </li>
             </ul>
           </div>
 

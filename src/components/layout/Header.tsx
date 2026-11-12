@@ -96,6 +96,13 @@ export function Header() {
 
           {/* Navegación */}
           <div className="flex items-center gap-4">
+            <Link
+              href="/empleos"
+              className="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
+            >
+              Empleos
+            </Link>
+
             {/* Botón de búsqueda móvil */}
             <Button 
               variant="ghost" 
@@ -120,24 +127,28 @@ export function Header() {
                   <DropdownMenuLabel>
                     <span className="text-xs text-muted-foreground">{user.email}</span>
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={async () => {
-                    const profileData = await profile();
-                    if (profileData) {
-                      window.location.href = `/profesionales/${profileData.id}`;
-                    }
-                  }}>
-                    Mi perfil
-                  </DropdownMenuItem>
+                  {user.role !== 'employer' ? (
+                    <DropdownMenuItem onClick={async () => {
+                      const profileData = await profile();
+                      if (profileData) {
+                        window.location.href = `/profesionales/${profileData.id}`;
+                      }
+                    }}>
+                      Mi perfil
+                    </DropdownMenuItem>
+                  ) : null}
                   <DropdownMenuItem onClick={() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = user.role === 'employer' ? '/dashboard/empleos' : '/dashboard';
                   }}>
                     Mi dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    window.location.href = '/dashboard/settings';
-                  }}>
-                    Ajustes
-                  </DropdownMenuItem>
+                  {user.role !== 'employer' ? (
+                    <DropdownMenuItem onClick={() => {
+                      window.location.href = '/dashboard/settings';
+                    }}>
+                      Ajustes
+                    </DropdownMenuItem>
+                  ) : null}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => logout()}>
                     Salir
@@ -150,6 +161,11 @@ export function Header() {
                   <Link href="/auth/login">
                     <User className="h-4 w-4 mr-1" />
                     Ingresar
+                  </Link>
+                </Button>
+                <Button size="sm" asChild className="hidden lg:flex" variant="outline">
+                  <Link href="/auth/registro-empresa">
+                    Publicar empleo
                   </Link>
                 </Button>
                 <Button size="sm" asChild className="hidden md:flex bg-amber-600 hover:bg-amber-700 text-white">
@@ -235,22 +251,31 @@ export function Header() {
                 </div>
 
                 {/* Opciones del menú */}
-                <button
-                  onClick={async () => {
-                    const profileData = await profile();
-                    if (profileData) {
-                      window.location.href = `/profesionales/${profileData.id}`;
-                    }
-                    setMobileMenuOpen(false);
-                  }}
+                {user.role !== 'employer' ? (
+                  <button
+                    onClick={async () => {
+                      const profileData = await profile();
+                      if (profileData) {
+                        window.location.href = `/profesionales/${profileData.id}`;
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    Mi perfil
+                  </button>
+                ) : null}
+                <Link
+                  href="/empleos"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                 >
-                  <User className="h-4 w-4" />
-                  Mi perfil
-                </button>
+                  Empleos
+                </Link>
                 <button
                   onClick={() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = user.role === 'employer' ? '/dashboard/empleos' : '/dashboard';
                     setMobileMenuOpen(false);
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -289,6 +314,20 @@ export function Header() {
                 >
                   <User className="h-4 w-4" />
                   Ingresar
+                </Link>
+                <Link
+                  href="/empleos"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  Empleos
+                </Link>
+                <Link
+                  href="/auth/registro-empresa"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  Publicar empleo
                 </Link>
                 <Link
                   href="/auth/registro"
