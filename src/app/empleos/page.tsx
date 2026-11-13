@@ -5,6 +5,10 @@ import { listPublicJobPosts } from "@/lib/server/employer-jobs";
 
 export const dynamic = "force-dynamic";
 
+type PageProps = {
+  searchParams?: Promise<{ q?: string }>;
+};
+
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("es-AR", {
     day: "2-digit",
@@ -13,8 +17,10 @@ function formatDate(value: string) {
   });
 }
 
-export default async function EmpleosPage() {
-  const items = await listPublicJobPosts().catch((error) => {
+export default async function EmpleosPage({ searchParams }: PageProps) {
+  const params = (await searchParams) || {};
+  const q = (params.q || "").trim();
+  const items = await listPublicJobPosts({ query: q || undefined }).catch((error) => {
     console.error("empleos page:", error);
     return [];
   });
@@ -28,6 +34,12 @@ export default async function EmpleosPage() {
             <p className="mt-2 max-w-2xl text-gray-600">
               Vacantes publicadas por empresas y privados de la ciudad y la zona. Contactá directo por mail o teléfono
               para enviar tu CV.
+              {q ? (
+                <>
+                  {" "}
+                  Filtrado por <span className="font-semibold text-gray-900">&quot;{q}&quot;</span>.
+                </>
+              ) : null}
             </p>
           </div>
           <Link
