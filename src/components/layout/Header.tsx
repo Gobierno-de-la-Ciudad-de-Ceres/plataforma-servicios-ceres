@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Search, Menu, User, X, LogOut, LayoutDashboard, ChevronDown, Settings } from "lucide-react";
+import { Search, Menu, User, X, LogOut, LayoutDashboard, ChevronDown, Settings, Briefcase, PlusCircle } from "lucide-react";
 import NextImage from "next/image";
 import { useState } from "react";
 import { SearchSuggestions } from "@/components/features/SearchSuggestions";
@@ -131,29 +131,52 @@ export function Header() {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>
                     <span className="text-xs text-muted-foreground">{user.email}</span>
+                    {user.role === "employer" ? (
+                      <span className="mt-1 block text-[11px] font-medium text-amber-700">
+                        Cuenta empresa
+                      </span>
+                    ) : null}
                   </DropdownMenuLabel>
-                  {user.role !== 'employer' ? (
-                    <DropdownMenuItem onClick={async () => {
-                      const profileData = await profile();
-                      if (profileData) {
-                        window.location.href = `/profesionales/${profileData.id}`;
-                      }
-                    }}>
-                      Mi perfil
-                    </DropdownMenuItem>
-                  ) : null}
-                  <DropdownMenuItem onClick={() => {
-                    window.location.href = user.role === 'employer' ? '/dashboard/empleos' : '/dashboard';
-                  }}>
-                    Mi dashboard
-                  </DropdownMenuItem>
-                  {user.role !== 'employer' ? (
-                    <DropdownMenuItem onClick={() => {
-                      window.location.href = '/dashboard/settings';
-                    }}>
-                      Ajustes
-                    </DropdownMenuItem>
-                  ) : null}
+                  {user.role === "employer" ? (
+                    <>
+                      <DropdownMenuItem onClick={() => {
+                        window.location.href = "/dashboard/empleos";
+                      }}>
+                        Mis vacantes
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        window.location.href = "/dashboard/empleos#nueva-vacante";
+                      }}>
+                        Publicar un empleo
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        window.location.href = "/empleos";
+                      }}>
+                        Bolsa de trabajo
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem onClick={async () => {
+                        const profileData = await profile();
+                        if (profileData) {
+                          window.location.href = `/profesionales/${profileData.id}`;
+                        }
+                      }}>
+                        Mi perfil
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        window.location.href = "/dashboard";
+                      }}>
+                        Mi dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        window.location.href = "/dashboard/settings";
+                      }}>
+                        Ajustes
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => logout()}>
                     Salir
@@ -256,21 +279,6 @@ export function Header() {
                 </div>
 
                 {/* Opciones del menú */}
-                {user.role !== 'employer' ? (
-                  <button
-                    onClick={async () => {
-                      const profileData = await profile();
-                      if (profileData) {
-                        window.location.href = `/profesionales/${profileData.id}`;
-                      }
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                  >
-                    <User className="h-4 w-4" />
-                    Mi perfil
-                  </button>
-                ) : null}
                 <Link
                   href="/servicios"
                   onClick={() => setMobileMenuOpen(false)}
@@ -285,26 +293,66 @@ export function Header() {
                 >
                   Empleos
                 </Link>
-                <button
-                  onClick={() => {
-                    window.location.href = user.role === 'employer' ? '/dashboard/empleos' : '/dashboard';
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Mi dashboard
-                </button>
-                <button
-                  onClick={() => {
-                    window.location.href = '/dashboard/settings';
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <Settings className="h-4 w-4" />
-                  Ajustes
-                </button>
+                {user.role === "employer" ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        window.location.href = "/dashboard/empleos";
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <Briefcase className="h-4 w-4" />
+                      Mis vacantes
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = "/dashboard/empleos#nueva-vacante";
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Publicar un empleo
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={async () => {
+                        const profileData = await profile();
+                        if (profileData) {
+                          window.location.href = `/profesionales/${profileData.id}`;
+                        }
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <User className="h-4 w-4" />
+                      Mi perfil
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = "/dashboard";
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Mi dashboard
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = "/dashboard/settings";
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Ajustes
+                    </button>
+                  </>
+                )}
                 <div className="border-t my-2"></div>
                 <button
                   onClick={() => {

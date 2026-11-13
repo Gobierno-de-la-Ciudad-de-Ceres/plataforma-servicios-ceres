@@ -36,7 +36,7 @@ import { resolvePublicUploadUrl } from "@/lib/public-upload-url";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { data: categoryTree, loading: categoriesLoading, error: categoriesError } = usePublicCategoriesTree();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -172,8 +172,12 @@ export default function SettingsPage() {
     if (status !== "authenticated") {
       return;
     }
+    if (session?.user?.role === "employer") {
+      router.replace("/dashboard/empleos");
+      return;
+    }
     loadProfessionalData();
-  }, [status, router]);
+  }, [status, session?.user?.role, router]);
 
   // Evitar perder cambios al recargar/cerrar pestaña (protección extra)
   useEffect(() => {

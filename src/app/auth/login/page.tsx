@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,16 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Shield, Users, CheckCircle2, AlertTriangle } from "lucide-react";
+
+function resolvePostLoginPath(role?: string | null, callbackUrl?: string | null) {
+  if (callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
+    return callbackUrl;
+  }
+  if (role === "employer") {
+    return "/dashboard/empleos";
+  }
+  return "/dashboard";
+}
 
 // Iconos de redes sociales
 const GoogleIcon = () => (
@@ -70,7 +80,9 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/dashboard");
+      const session = await getSession();
+      const callbackUrl = searchParams.get("callbackUrl");
+      router.push(resolvePostLoginPath(session?.user?.role, callbackUrl));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
@@ -82,10 +94,11 @@ export default function LoginPage() {
     setSocialLoading(provider);
     setError("");
     setOauthError(null);
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     
     try {
       const result = await signIn(provider, { 
-        callbackUrl: "/dashboard",
+        callbackUrl,
         redirect: false 
       });
       
@@ -111,7 +124,8 @@ export default function LoginPage() {
       
       // Si no hay URL, podría ser que ya estamos autenticados
       if (result?.ok) {
-        router.push("/dashboard");
+        const session = await getSession();
+        router.push(resolvePostLoginPath(session?.user?.role, callbackUrl));
         return;
       }
       
@@ -320,15 +334,21 @@ export default function LoginPage() {
                 </Button>
               </div>
 
-              {/* Divider 2 */}
-              <div className="my-6 flex items-center gap-4">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-gray-400 text-xs">¿Sos profesional?</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
-              </div>
-
-              {/* Register CTA */}
-              <div className="text-center">
+              {/* Register CTAs */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                  <span className="text-gray-400 text-xs">¿Todavía no tenés cuenta?</span>
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
+                <Link href="/auth/registro-empresa">
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer w-full h-12 rounded-xl border-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-semibold"
+                  >
+                    Registrarme como empresa (empleos)
+                  </Button>
+                </Link>
                 <Link href="/auth/registro">
                   <Button
                     variant="outline"

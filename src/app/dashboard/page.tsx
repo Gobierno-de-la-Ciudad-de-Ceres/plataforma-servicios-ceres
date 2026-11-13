@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
@@ -92,11 +93,13 @@ type ProfessionalTip = {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { data: session, status: authStatus } = useSession();
   const { data: categoryTree, loading: categoriesLoading, error: categoriesError } = usePublicCategoriesTree();
   const [activeTab, setActiveTab] = useState("overview");
   const [me, setMe] = useState<DashboardProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
+  const [isEmployerAccount, setIsEmployerAccount] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -516,13 +519,30 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    if (authStatus === "loading") return;
+
+    if (authStatus === "unauthenticated") {
+      setIsUnauthorized(true);
+      setLoading(false);
+      setTimeout(() => {
+        router.push("/auth/login?callbackUrl=/dashboard");
+      }, 1500);
+      return;
+    }
+
+    if (session?.user?.role === "employer") {
+      setIsEmployerAccount(true);
+      router.replace("/dashboard/empleos");
+      return;
+    }
+
     const fetchMyProfessional = async () => {
       try {
         const profile = await getDashboardProfile();
         setMe(profile);
 
         // Cargar horarios
-        if (profile.schedule && typeof profile.schedule === 'object') {
+        if (profile.schedule && typeof profile.schedule === "object") {
           setScheduleData(profile.schedule as Record<string, ScheduleData>);
         } else {
           initializeDefaultSchedule();
@@ -531,22 +551,32 @@ export default function DashboardPage() {
         if (error instanceof ApiClientError && error.status === 401) {
           setIsUnauthorized(true);
           setTimeout(() => {
-            router.push('/auth/login?callbackUrl=/dashboard');
+            router.push("/auth/login?callbackUrl=/dashboard");
           }, 2000);
           return;
         }
 
         if (error instanceof ApiClientError && error.status === 404) {
+          // Puede ser empresa sin perfil profesional: no mostrar onboarding de oficio.
+          try {
+            const employerRes = await fetch("/api/employer/me");
+            if (employerRes.ok) {
+              setIsEmployerAccount(true);
+              router.replace("/dashboard/empleos");
+              return;
+            }
+          } catch {
+            // seguir con onboarding de ciudadano/profesional
+          }
           setMe(null);
           initializeDefaultSchedule();
           return;
         }
 
-        console.error('Error cargando profesional:', error);
-        // Si hay un error de red, podría ser que no esté autenticado
+        console.error("Error cargando profesional:", error);
         setIsUnauthorized(true);
         setTimeout(() => {
-          router.push('/auth/login?callbackUrl=/dashboard');
+          router.push("/auth/login?callbackUrl=/dashboard");
         }, 2000);
       } finally {
         setLoading(false);
@@ -562,7 +592,7 @@ export default function DashboardPage() {
           setStats(null);
           return;
         }
-        console.error('Error cargando estadísticas:', error);
+        console.error("Error cargando estadísticas:", error);
       } finally {
         setStatsLoading(false);
       }
@@ -577,11 +607,10 @@ export default function DashboardPage() {
           setCertifications([]);
           return;
         }
-        console.error('Error cargando certificaciones:', error);
+        console.error("Error cargando certificaciones:", error);
       }
     };
 
-    // Tip profesional aleatorio al montar
     const pickRandomTip = () => {
       if (professionalTips.length > 0) {
         const index = Math.floor(Math.random() * professionalTips.length);
@@ -594,9 +623,9 @@ export default function DashboardPage() {
     fetchCertifications();
     pickRandomTip();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [authStatus, session?.user?.role, router]);
 
-  if (loading) {
+  if (loading || authStatus === "loading" || isEmployerAccount || session?.user?.role === "employer") {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#006F4B]"></div>

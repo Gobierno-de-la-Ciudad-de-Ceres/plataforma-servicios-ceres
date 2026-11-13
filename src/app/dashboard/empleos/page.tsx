@@ -147,23 +147,37 @@ export default function DashboardEmpleosPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mis vacantes</h1>
-          <p className="text-sm text-gray-600">
-            {employer?.companyName
-              ? `Publicá avisos de empleo para ${employer.companyName}.`
-              : "Publicá avisos de empleo."}{" "}
-            Los interesados te contactan por fuera.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gradient-to-br from-[#006F4B] via-[#008255] to-[#004d35] px-4 py-10 text-white">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70">
+              Espacio empresa
+            </p>
+            <h1 className="mt-2 text-3xl font-bold">
+              {employer?.companyName || "Mis vacantes"}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-white/85">
+              Publicá ofertas de empleo, gestioná la cartelera y recibí CVs por mail o teléfono.
+              No hace falta subir currículums a la plataforma.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="secondary" className="bg-white text-[#006F4B] hover:bg-white/90">
+              <Link href="#nueva-vacante">
+                <Plus className="mr-1 h-4 w-4" />
+                Publicar un empleo
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="border-white/40 bg-transparent text-white hover:bg-white/10">
+              <Link href="/empleos">Ver bolsa de trabajo</Link>
+            </Button>
+          </div>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/empleos">Ver cartelera pública</Link>
-        </Button>
       </div>
 
-      <Card>
+      <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
+      <Card id="nueva-vacante">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Plus className="h-5 w-5" />
@@ -288,6 +302,7 @@ export default function DashboardEmpleosPage() {
             </Card>
           ))
         )}
+      </div>
       </div>
     </div>
   );
