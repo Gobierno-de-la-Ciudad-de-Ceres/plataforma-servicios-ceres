@@ -1,27 +1,31 @@
-import { ArrowRight, Rocket, CheckCircle2, UserPlus, MessageCircle, MapPin, Verified } from "lucide-react";
+import { Rocket, CheckCircle2, UserPlus, MessageCircle, Verified, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { HeroSearch } from "@/components/features/HeroSearch";
+import { HeroCtaMenus } from "@/components/features/HeroCtaMenus";
 import { FeaturedProfessionals } from "@/components/features/FeaturedProfessionals";
 import { CategoryCarouselSection } from "@/components/features/CategoryCarouselSection";
 import { HomeProfessionsSection } from "@/components/features/HomeProfessionsSection";
+import { HomeJobsSection } from "@/components/features/HomeJobsSection";
 import { listFeaturedHomeProfessionals } from "@/lib/server/public-professionals";
-
+import { listPublicJobPosts } from "@/lib/server/employer-jobs";
 
 export default async function Home() {
-  const featuredProfessionals = await listFeaturedHomeProfessionals(24).catch((error) => {
-    console.error("Error loading featured professionals for home:", error);
-    return [];
-  });
+  const [featuredProfessionals, featuredJobs] = await Promise.all([
+    listFeaturedHomeProfessionals(24).catch((error) => {
+      console.error("Error loading featured professionals for home:", error);
+      return [];
+    }),
+    listPublicJobPosts({ limit: 12 }).catch((error) => {
+      console.error("Error loading featured jobs for home:", error);
+      return [];
+    }),
+  ]);
 
   return (
     <div className="bg-[#f8f9fa] dark:bg-background-dark text-gray-800 dark:text-gray-200 transition-colors duration-300">
-      {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[#EBE4C0]">
-          
-          
-          {/* Elementos decorativos izquierda */}
           <div className="hidden xl:block absolute left-0 top-0 h-full w-1/3 transition-opacity duration-700 ease-out">
             <Image
               src="/elementosizquierda.png"
@@ -33,8 +37,7 @@ export default async function Home() {
               blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjRTlGNkYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4="
             />
           </div>
-          
-          {/* Elementos decorativos derecha */}
+
           <div className="hidden xl:block absolute right-0 top-0 h-full w-1/3 transition-opacity duration-700 ease-out">
             <Image
               src="/elementosderecha.png"
@@ -47,67 +50,60 @@ export default async function Home() {
             />
           </div>
         </div>
-        
-        {/* Decoración de fondo */}
+
         <div className="pointer-events-none absolute inset-0 opacity-40 md:opacity-50 z-0">
           <div className="absolute -top-20 -left-20 h-64 w-64 md:h-80 md:w-80 lg:h-96 lg:w-96 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -right-20 h-64 w-64 md:h-80 md:w-80 lg:h-[28rem] lg:w-[28rem] rounded-full blur-3xl" />
         </div>
-        
+
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background-light dark:to-background-dark z-0"></div>
         <div className="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-20 text-center">
           <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 dark:text-white mb-6">
-            ¿Buscás un técnico? ¿Profesional?<br/>
+            ¿Buscás un profesional
+            <br className="hidden sm:block" /> o un empleo?
+            <br />
             <span className="text-primary font-extrabold">¡Encontralo acá!</span>
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-            Plataforma del Gobierno de la Ciudad de Ceres para conectar vecinos con profesionales verificados de manera segura y rápida.
+            Plataforma del Gobierno de la Ciudad de Ceres para conectar vecinos con profesionales verificados y con
+            vacantes laborales de la ciudad y la zona.
           </p>
-          
+
           <HeroSearch />
-          
-          {/* Botones CTA */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-            <Link 
-              href="/servicios" 
-              className="group px-8 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-full shadow-sm hover:shadow-md transition-colors transition-shadow border border-gray-200 dark:border-gray-600 flex items-center justify-center gap-2"
-            >
-              Ver todos los servicios
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-            </Link>
-            <Link 
-              href="/auth/registro" 
-              className="px-8 py-3 font-semibold rounded-full shadow-lg bg-amber-600 text-white transition-colors transform hover:bg-amber-700"
-            >
-              Ofrecer mis servicios
-            </Link>
-          </div>
+          <HeroCtaMenus />
         </div>
       </header>
 
-      {/* Beneficios clave */}
       <section className="bg-primary text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center md:text-left">
             <div className="flex flex-col items-center md:items-start p-4 rounded-xl cursor-default">
               <Verified className="h-10 w-10 mb-3 opacity-90" aria-hidden="true" />
               <h3 className="font-bold text-lg mb-1">Desarrollo local</h3>
-              <p className="text-sm opacity-80 text-center md:text-left">Iniciativa del Gobierno de la Ciudad de Ceres</p>
+              <p className="text-sm opacity-80 text-center md:text-left">
+                Servicios y empleos impulsados desde el municipio
+              </p>
             </div>
             <div className="flex flex-col items-center md:items-start p-4 rounded-xl cursor-default">
               <Rocket className="h-10 w-10 mb-3 opacity-90" aria-hidden="true" />
               <h3 className="font-bold text-lg mb-1">Rápido y simple</h3>
-              <p className="text-sm opacity-80 text-center md:text-left">Buscá, elegí y coordiná en minutos</p>
+              <p className="text-sm opacity-80 text-center md:text-left">
+                Encontrá un profesional o una vacante en minutos
+              </p>
             </div>
             <div className="flex flex-col items-center md:items-start p-4 rounded-xl cursor-default">
               <MessageCircle className="h-10 w-10 mb-3 opacity-90" aria-hidden="true" />
               <h3 className="font-bold text-lg mb-1">Contacto directo</h3>
-              <p className="text-sm opacity-80 text-center md:text-left">Coordiná por WhatsApp o teléfono</p>
+              <p className="text-sm opacity-80 text-center md:text-left">
+                Coordiná por WhatsApp, teléfono o mail
+              </p>
             </div>
             <div className="flex flex-col items-center md:items-start p-4 rounded-xl cursor-default">
-              <MapPin className="h-10 w-10 mb-3 opacity-90" aria-hidden="true" />
-              <h3 className="font-bold text-lg mb-1">Enfocado en la región</h3>
-              <p className="text-sm opacity-80 text-center md:text-left">Profesionales de Ceres y la zona</p>
+              <Briefcase className="h-10 w-10 mb-3 opacity-90" aria-hidden="true" />
+              <h3 className="font-bold text-lg mb-1">Bolsa de trabajo local</h3>
+              <p className="text-sm opacity-80 text-center md:text-left">
+                Empresas de Ceres y la zona publican sus vacantes
+              </p>
             </div>
           </div>
         </div>
@@ -117,13 +113,12 @@ export default async function Home() {
 
       <HomeProfessionsSection />
 
+      <HomeJobsSection jobs={featuredJobs} />
 
-      {/* Profesionales destacados */}
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <FeaturedProfessionals professionals={featuredProfessionals} />
       </section>
 
-      {/* CTA para profesionales */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="relative rounded-3xl overflow-hidden bg-primary shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -140,7 +135,9 @@ export default async function Home() {
                   </div>
                   <div>
                     <h4 className="font-bold text-lg">Registro</h4>
-                    <p className="text-sm opacity-80">Creá tu perfil y agregá tus servicios. Recordá que toda la información tiene que ser verídica.</p>
+                    <p className="text-sm opacity-80">
+                      Creá tu perfil y agregá tus servicios. Recordá que toda la información tiene que ser verídica.
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -162,13 +159,18 @@ export default async function Home() {
                   </div>
                 </div>
               </div>
-              <div className="mt-10">
+              <div className="mt-10 flex flex-wrap gap-3">
                 <Link
                   href="/auth/registro"
-                  className="bg-white text-primary px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 transition-colors transition-shadow flex items-center gap-2 w-fit"
+                  className="bg-white text-primary px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 transition-colors flex items-center gap-2 w-fit"
                 >
-                  Crea tu perfil gratis
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  Crear perfil profesional
+                </Link>
+                <Link
+                  href="/auth/registro-empresa"
+                  className="bg-amber-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-amber-600 transition-colors flex items-center gap-2 w-fit"
+                >
+                  Publicar un empleo
                 </Link>
               </div>
             </div>

@@ -55,20 +55,20 @@ export function HeroSearch() {
     }
 
     const queryString = params.toString();
-    router.push(queryString ? `/servicios?${queryString}` : "/servicios");
+    router.push(queryString ? `/buscar?${queryString}` : "/buscar");
   };
 
   return (
     <>
       <form
         role="search"
-        aria-label="Buscar servicios"
+        aria-label="Buscar servicios o empleos"
         onSubmit={handleSearchSubmit}
         className="relative mx-auto flex max-w-4xl flex-col gap-2 rounded-[2rem] border border-gray-100 bg-white p-2 shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:flex-row sm:items-center sm:gap-0"
       >
         <div className="flex min-w-0 flex-1 items-center rounded-full px-3 sm:px-4">
           <Search className="h-5 w-5 shrink-0 text-gray-400" aria-hidden="true" />
-          <label htmlFor="q" className="sr-only">Buscar servicios</label>
+          <label htmlFor="q" className="sr-only">Buscar servicios o empleos</label>
           <input
             id="q"
             name="q"
@@ -76,8 +76,8 @@ export function HeroSearch() {
             value={searchQuery}
             onChange={handleSearchChange}
             onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-            placeholder="¿Que servicio necesitas?"
-            aria-label="¿Que servicio necesitas?"
+            placeholder="¿Qué servicio o empleo buscás?"
+            aria-label="¿Qué servicio o empleo buscás?"
             autoComplete="off"
             className="min-w-0 flex-1 border-none bg-transparent px-4 py-4 text-base text-gray-700 placeholder-gray-400 focus-visible:outline-none dark:text-gray-200"
           />

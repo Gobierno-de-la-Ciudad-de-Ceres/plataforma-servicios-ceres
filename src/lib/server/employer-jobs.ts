@@ -147,9 +147,23 @@ export function serializeJobPost(
   };
 }
 
-export async function listPublicJobPosts() {
+export async function listPublicJobPosts(options?: { query?: string; limit?: number }) {
+  const query = options?.query?.trim();
+  const where = {
+    ...publicJobWhere(),
+    ...(query
+      ? {
+          OR: [
+            { title: { contains: query, mode: "insensitive" as const } },
+            { companyName: { contains: query, mode: "insensitive" as const } },
+            { requirements: { contains: query, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
   const posts = await prisma.jobPost.findMany({
-    where: publicJobWhere(),
+    where,
     include: {
       employer: {
         select: {
@@ -161,6 +175,7 @@ export async function listPublicJobPosts() {
       },
     },
     orderBy: { createdAt: "desc" },
+    ...(options?.limit ? { take: options.limit } : {}),
   });
   return posts.map(serializeJobPost);
 }

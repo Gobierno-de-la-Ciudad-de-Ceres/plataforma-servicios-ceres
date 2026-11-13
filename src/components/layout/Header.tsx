@@ -38,8 +38,7 @@ export function Header() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Redirigir a la página de servicios con la búsqueda
-      window.location.href = `/servicios?q=${encodeURIComponent(searchQuery.trim())}`;
+      window.location.href = `/buscar?q=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
 
@@ -73,7 +72,7 @@ export function Header() {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-                placeholder="Buscar servicios..."
+                placeholder="Buscar servicios o empleos..."
                 className="pl-10 pr-14 py-2.5 border border-gray-200 dark:border-gray-700 rounded-full text-base bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white w-80 transition-all"
               />
               <button
@@ -96,6 +95,12 @@ export function Header() {
 
           {/* Navegación */}
           <div className="flex items-center gap-4">
+            <Link
+              href="/servicios"
+              className="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
+            >
+              Servicios
+            </Link>
             <Link
               href="/empleos"
               className="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
@@ -208,7 +213,7 @@ export function Header() {
               value={searchQuery}
               onChange={handleSearchChange}
               onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-              placeholder="Buscar servicios..."
+              placeholder="Buscar servicios o empleos..."
               className="w-full rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 pl-10 pr-12 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white transition-all"
               autoFocus
             />
@@ -267,6 +272,13 @@ export function Header() {
                   </button>
                 ) : null}
                 <Link
+                  href="/servicios"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  Servicios
+                </Link>
+                <Link
                   href="/empleos"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -314,6 +326,13 @@ export function Header() {
                 >
                   <User className="h-4 w-4" />
                   Ingresar
+                </Link>
+                <Link
+                  href="/servicios"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  Servicios
                 </Link>
                 <Link
                   href="/empleos"

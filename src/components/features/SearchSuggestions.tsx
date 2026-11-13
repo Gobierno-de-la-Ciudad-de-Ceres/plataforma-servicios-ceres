@@ -1,8 +1,11 @@
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+"use client";
+
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Building2, Search, User } from "lucide-react";
+import { Briefcase, Building2, Search, User } from "lucide-react";
 import { usePublicCategoriesTree } from "@/hooks/usePublicCategoriesTree";
 import type { PublicCategoriesTree } from "@/lib/api/professionals";
+import type { JobPost } from "@/types";
 
 interface SearchSuggestionsProps {
   query: string;
@@ -26,6 +29,10 @@ type SearchResult =
       type: "subcategory";
       item: SearchSubcategory;
       parentArea?: SearchArea;
+    }
+  | {
+      type: "job";
+      item: Pick<JobPost, "id" | "title" | "companyName">;
     };
 
 function SearchSuggestionsComponent({
@@ -37,11 +44,39 @@ function SearchSuggestionsComponent({
 }: SearchSuggestionsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { data } = usePublicCategoriesTree();
+  const [jobs, setJobs] = useState<JobPost[]>([]);
 
   const areasMap = useMemo(
     () => new Map(data.areas.map((area) => [area.slug, area])),
     [data.areas]
   );
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!isVisible || trimmed.length < 2) {
+      setJobs([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/empleos?q=${encodeURIComponent(trimmed)}&limit=5`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const json = (await response.json()) as { items?: JobPost[] };
+        setJobs(json.items || []);
+      } catch {
+        // ignore abort/network
+      }
+    }, 200);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [isVisible, query]);
 
   const results = useMemo(() => {
     const trimmed = query.trim();
@@ -80,8 +115,19 @@ function SearchSuggestionsComponent({
       }
     }
 
-    return searchResults.slice(0, 8);
-  }, [areasMap, data.areas, data.subcategoriesOficios, data.subcategoriesProfesiones, query]);
+    for (const job of jobs) {
+      searchResults.push({
+        type: "job",
+        item: {
+          id: job.id,
+          title: job.title,
+          companyName: job.companyName,
+        },
+      });
+    }
+
+    return searchResults.slice(0, 10);
+  }, [areasMap, data.areas, data.subcategoriesOficios, data.subcategoriesProfesiones, jobs, query]);
 
   useEffect(() => {
     if (!isVisible) {
@@ -100,12 +146,20 @@ function SearchSuggestionsComponent({
 
   const handleSuggestionClick = useCallback(
     (result: SearchResult) => {
+      if (result.type === "job") {
+        onSelect(result.item.title);
+        return;
+      }
       onSelect(result.item.name);
     },
     [onSelect]
   );
 
   const getSuggestionLink = useCallback((result: SearchResult) => {
+    if (result.type === "job") {
+      return `/empleos/${result.item.id}`;
+    }
+
     if (result.type === "subcategory") {
       if (result.item.group === "oficios" && result.parentArea) {
         return `/servicios?grupo=${result.item.group}&categoria=${result.parentArea.slug}&subcategoria=${result.item.slug}`;
@@ -129,13 +183,29 @@ function SearchSuggestionsComponent({
       className="w-full max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white text-left shadow-lg"
     >
       {results.map((result) => {
-        const isSubcategory = result.type === "subcategory";
-        const item = result.item;
+        const key =
+          result.type === "job"
+            ? `job-${result.item.id}`
+            : `${result.type}-${result.item.id}`;
+
+        const title = result.type === "job" ? result.item.title : result.item.name;
+        const subtitle =
+          result.type === "job"
+            ? `Empleo · ${result.item.companyName}`
+            : result.type === "subcategory" && result.parentArea
+              ? result.parentArea.name
+              : result.type === "area"
+                ? "Categoría completa"
+                : result.type === "subcategory"
+                  ? "Servicio"
+                  : null;
 
         const content = (
           <>
             <div className="flex-shrink-0">
-              {isSubcategory ? (
+              {result.type === "job" ? (
+                <Briefcase className="h-4 w-4 text-amber-600" aria-hidden="true" />
+              ) : result.type === "subcategory" ? (
                 <User className="h-4 w-4 text-gray-500" aria-hidden="true" />
               ) : (
                 <Building2 className="h-4 w-4 text-gray-500" aria-hidden="true" />
@@ -143,29 +213,20 @@ function SearchSuggestionsComponent({
             </div>
 
             <div className="min-w-0 flex-1 text-left">
-              <div className="truncate text-left font-medium text-gray-900">
-                {item.name}
-              </div>
-              {isSubcategory && result.parentArea && (
-                <div className="truncate text-left text-sm text-gray-500">
-                  {result.parentArea.name}
-                </div>
-              )}
-              {!isSubcategory && (
-                <div className="truncate text-left text-sm text-gray-500">
-                  Categoría completa
-                </div>
-              )}
+              <div className="truncate text-left font-medium text-gray-900">{title}</div>
+              {subtitle ? (
+                <div className="truncate text-left text-sm text-gray-500">{subtitle}</div>
+              ) : null}
             </div>
 
             <Search className="h-4 w-4 flex-shrink-0 text-gray-400" aria-hidden="true" />
           </>
         );
 
-        if (!navigateOnSelect) {
+        if (!navigateOnSelect && result.type !== "job") {
           return (
             <button
-              key={`${result.type}-${item.id}`}
+              key={key}
               type="button"
               onClick={() => handleSuggestionClick(result)}
               className="flex w-full items-center gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors hover:bg-gray-50 last:border-b-0"
@@ -177,7 +238,7 @@ function SearchSuggestionsComponent({
 
         return (
           <Link
-            key={`${result.type}-${item.id}`}
+            key={key}
             href={getSuggestionLink(result)}
             onClick={() => handleSuggestionClick(result)}
             className="flex items-center gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors hover:bg-gray-50 last:border-b-0"
