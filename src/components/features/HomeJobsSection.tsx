@@ -88,7 +88,7 @@ export function HomeJobsSection({ jobs }: HomeJobsSectionProps) {
           >
             <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-black">
               {job.employer?.logoUrl ? (
-                <div className="absolute inset-0 bg-black p-10 transition-transform duration-500 group-hover:scale-105">
+                <div className="absolute inset-0 bg-white p-10 transition-transform duration-500 group-hover:scale-105">
                   <EmployerLogo logoUrl={job.employer.logoUrl} alt={job.companyName} />
                 </div>
               ) : (

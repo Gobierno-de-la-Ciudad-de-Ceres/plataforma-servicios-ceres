@@ -286,7 +286,7 @@ export default function DashboardEmpleosPage() {
                 <div className="h-20 w-20 overflow-hidden rounded-full border">
                   {logoPreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoPreview} alt="Logo" className="h-full w-full bg-black object-contain" />
+                    <img src={logoPreview} alt="Logo" className="h-full w-full bg-white object-contain p-1" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-gray-400">
                       <Upload className="h-5 w-5" />

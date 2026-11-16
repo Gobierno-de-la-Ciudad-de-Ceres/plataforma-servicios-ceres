@@ -36,7 +36,7 @@ export function EmployerLogo({
     <img
       src={src}
       alt={alt}
-      className={cn("h-full w-full bg-black object-contain", className)}
+      className={cn("h-full w-full bg-white object-contain p-1", className)}
     />
   );
 }
