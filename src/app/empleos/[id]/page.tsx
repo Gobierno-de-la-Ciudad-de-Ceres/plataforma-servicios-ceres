@@ -39,6 +39,7 @@ export default async function EmpleoDetallePage({ params }: PageProps) {
                   fill
                   className="object-cover"
                   sizes="64px"
+                  unoptimized={item.employer.logoUrl.startsWith("/api/")}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-gray-400">

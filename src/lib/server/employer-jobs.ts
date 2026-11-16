@@ -1,6 +1,8 @@
 import type { JobPost, JobPostStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
+import { resolvePublicUploadUrl } from "@/lib/public-upload-url";
+
 export class EmployerJobsError extends Error {
   status: number;
   code: string;
@@ -140,7 +142,7 @@ export function serializeJobPost(
       ? {
           id: post.employer.id,
           companyName: post.employer.companyName,
-          logoUrl: post.employer.logoUrl,
+          logoUrl: resolvePublicUploadUrl(post.employer.logoUrl) || post.employer.logoUrl,
           phone: post.employer.phone,
         }
       : undefined,

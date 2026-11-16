@@ -94,6 +94,7 @@ export function HomeJobsSection({ jobs }: HomeJobsSectionProps) {
                   fill
                   sizes="280px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  unoptimized={job.employer.logoUrl.startsWith("/api/")}
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800" />

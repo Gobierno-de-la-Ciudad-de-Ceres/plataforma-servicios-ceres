@@ -65,12 +65,14 @@ export default async function EmpleosPage({ searchParams }: PageProps) {
                 <div className="flex gap-4">
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border bg-gray-50">
                     {item.employer?.logoUrl ? (
+                      // logoUrl ya viene resuelto a /api/v1/uploads/public/...
                       <Image
                         src={item.employer.logoUrl}
                         alt={item.companyName}
                         fill
                         className="object-cover"
                         sizes="56px"
+                        unoptimized={item.employer.logoUrl.startsWith("/api/")}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-gray-400">
