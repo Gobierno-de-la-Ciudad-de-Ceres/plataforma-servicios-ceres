@@ -15,7 +15,7 @@ export function Footer() {
                  Ciudad de Ceres</h5>
             </div>
             <p className="text-sm text-gray-400 dark:text-gray-400 mb-4 leading-relaxed">
-              Plataforma oficial de servicios profesionales para Ceres y la zona. Conectando talento local con necesidades reales.
+              Plataforma oficial de servicios profesionales y bolsa de empleo para Ceres y la zona. Conectamos vecinos con profesionales verificados y vacantes laborales.
             </p>
             {/* Contacto 
             <ul className="text-sm text-gray-400 dark:text-gray-400 space-y-2">

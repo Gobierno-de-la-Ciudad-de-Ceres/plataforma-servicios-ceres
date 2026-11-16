@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     default: "Ceres en Red",
     template: "%s | Ceres en Red"
   },
-  description: "Plataforma oficial de servicios profesionales del Gobierno de Ceres. Encuentra profesionales verificados para todas tus necesidades.",
+  description: "Plataforma oficial de servicios profesionales y empleos del Gobierno de Ceres. Encontrá profesionales verificados y vacantes laborales de la ciudad y la zona.",
   keywords: ["servicios", "profesionales", "Ceres", "plomería", "electricidad", "construcción", "Santa Fe", "Argentina", "Ceres en Red"],
   authors: [{ name: "Gobierno de la Ciudad de Ceres" }],
   creator: "Gobierno de la Ciudad de Ceres",

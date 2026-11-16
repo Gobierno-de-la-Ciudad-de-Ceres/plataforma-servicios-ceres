@@ -181,7 +181,7 @@ export function generateOrganizationStructuredData() {
     "alternateName": "Ceres en Red -Gobierno de la Ciudad de Ceres",
     "url": baseUrl,
     "logo": `${baseUrl}/gob_iso.png`,
-    "description": "Plataforma oficial de servicios profesionales del Gobierno de la Ciudad de Ceres",
+    "description": "Plataforma oficial de servicios profesionales y bolsa de empleo del Gobierno de la Ciudad de Ceres",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Ceres",
