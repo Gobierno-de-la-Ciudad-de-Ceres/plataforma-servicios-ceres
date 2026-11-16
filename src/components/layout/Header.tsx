@@ -140,6 +140,11 @@ export function Header() {
                   {user.role === "employer" ? (
                     <>
                       <DropdownMenuItem onClick={() => {
+                        window.location.href = "/dashboard/empleos#perfil-empresa";
+                      }}>
+                        Editar perfil
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
                         window.location.href = "/dashboard/empleos";
                       }}>
                         Mis vacantes

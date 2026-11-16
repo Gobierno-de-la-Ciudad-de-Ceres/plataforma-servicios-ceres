@@ -224,7 +224,11 @@ export default function RegistroEmpresaPage() {
                   <div className="mt-2 flex items-center gap-4">
                     {form.logoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={form.logoUrl} alt="Logo empresa" className="h-16 w-16 rounded-full object-cover border" />
+                      <img
+                        src={resolvePublicUploadUrl(form.logoUrl) || form.logoUrl}
+                        alt="Logo empresa"
+                        className="h-16 w-16 rounded-full object-cover border"
+                      />
                     ) : (
                       <div className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed text-gray-400">
                         <Upload className="h-5 w-5" />

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
-import { Briefcase, Building2, CalendarRange } from "lucide-react";
+import { Briefcase, CalendarRange } from "lucide-react";
+import { EmployerLogo } from "@/components/features/EmployerLogo";
 import { listPublicJobPosts } from "@/lib/server/employer-jobs";
 
 export const dynamic = "force-dynamic";
@@ -63,22 +63,8 @@ export default async function EmpleosPage({ searchParams }: PageProps) {
                 className="block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-primary/40 hover:shadow-md"
               >
                 <div className="flex gap-4">
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border bg-gray-50">
-                    {item.employer?.logoUrl ? (
-                      // logoUrl ya viene resuelto a /api/v1/uploads/public/...
-                      <Image
-                        src={item.employer.logoUrl}
-                        alt={item.companyName}
-                        fill
-                        className="object-cover"
-                        sizes="56px"
-                        unoptimized={item.employer.logoUrl.startsWith("/api/")}
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-gray-400">
-                        <Building2 className="h-6 w-6" />
-                      </div>
-                    )}
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-gray-200">
+                    <EmployerLogo logoUrl={item.employer?.logoUrl} alt={item.companyName} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

@@ -2,8 +2,8 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Briefcase } from "lucide-react";
+import { EmployerLogo } from "@/components/features/EmployerLogo";
 import type { JobPost } from "@/types";
 
 type HomeJobsSectionProps = {
@@ -86,16 +86,11 @@ export function HomeJobsSection({ jobs }: HomeJobsSectionProps) {
             href={`/empleos/${job.id}`}
             className="snap-start shrink-0 basis-[240px] sm:basis-[260px] md:basis-[280px] group"
           >
-            <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
+            <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-black">
               {job.employer?.logoUrl ? (
-                <Image
-                  src={job.employer.logoUrl}
-                  alt={job.companyName}
-                  fill
-                  sizes="280px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  unoptimized={job.employer.logoUrl.startsWith("/api/")}
-                />
+                <div className="absolute inset-0 bg-black p-10 transition-transform duration-500 group-hover:scale-105">
+                  <EmployerLogo logoUrl={job.employer.logoUrl} alt={job.companyName} />
+                </div>
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800" />
               )}

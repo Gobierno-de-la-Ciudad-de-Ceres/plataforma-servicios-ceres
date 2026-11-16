@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Building2, CalendarRange, Mail, Phone } from "lucide-react";
+import { ArrowLeft, CalendarRange, Mail, Phone } from "lucide-react";
+import { EmployerLogo } from "@/components/features/EmployerLogo";
 import { getPublicJobPost } from "@/lib/server/employer-jobs";
 
 export const dynamic = "force-dynamic";
@@ -31,21 +31,12 @@ export default async function EmpleoDetallePage({ params }: PageProps) {
 
         <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex gap-4">
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border bg-gray-50">
-              {item.employer?.logoUrl ? (
-                <Image
-                  src={item.employer.logoUrl}
-                  alt={item.companyName}
-                  fill
-                  className="object-cover"
-                  sizes="64px"
-                  unoptimized={item.employer.logoUrl.startsWith("/api/")}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-gray-400">
-                  <Building2 className="h-7 w-7" />
-                </div>
-              )}
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-gray-200">
+              <EmployerLogo
+                logoUrl={item.employer?.logoUrl}
+                alt={item.companyName}
+                iconClassName="h-7 w-7"
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{item.title}</h1>
