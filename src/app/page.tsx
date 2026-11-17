@@ -58,12 +58,13 @@ export default async function Home() {
 
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background-light dark:to-background-dark z-0"></div>
         <div className="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-20 text-center">
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 dark:text-white mb-6">
-            ¿Buscás un profesional
-            <br className="hidden sm:block" /> o un empleo?
-            <br />
-            <span className="text-primary font-extrabold">¡Encontralo acá!</span>
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 dark:text-white mb-4">
+            Plataforma de servicios y empleos
           </h1>
+          <p className="text-xl md:text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2 max-w-3xl mx-auto leading-snug">
+            ¿Ofrecés o buscás un empleo? ¿Buscás o ofrecés un servicio?
+          </p>
+          <p className="text-2xl md:text-3xl text-primary font-extrabold mb-6">¡Encontralo acá!</p>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
             Plataforma del Gobierno de la Ciudad de Ceres para conectar vecinos con profesionales verificados y con
             vacantes laborales de la ciudad y la zona.
