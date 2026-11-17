@@ -62,11 +62,11 @@ export default async function Home() {
             Plataforma de servicios y empleos
           </h1>
           <p className="text-xl md:text-2xl font-medium text-gray-800 dark:text-gray-100 mb-2 max-w-3xl mx-auto leading-snug">
-            ¿Ofrecés o buscás un empleo? ¿Buscás o ofrecés un servicio?
+            ¿Ofrecés o buscás un empleo? ¿Buscás u ofrecés un servicio?
           </p>
           <p className="text-2xl md:text-3xl text-primary font-extrabold mb-6">¡Encontralo acá!</p>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-            Plataforma del Gobierno de la Ciudad de Ceres para conectar vecinos con profesionales verificados y con
+            Espacio del Gobierno de la Ciudad de Ceres para conectar vecinos con profesionales verificados y con
             vacantes laborales de la ciudad y la zona.
           </p>
 
