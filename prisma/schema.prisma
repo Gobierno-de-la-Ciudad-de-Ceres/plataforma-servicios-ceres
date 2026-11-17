@@ -253,6 +253,9 @@ model JobPost {
   employerId     String
   companyName    String
   title          String
+  location       String
+  positionsCount Int           @default(1)
+  description    String        @db.Text
   searchStartsAt DateTime
   searchEndsAt   DateTime
   requirements   String        @db.Text

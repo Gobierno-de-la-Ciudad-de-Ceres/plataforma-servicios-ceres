@@ -2,13 +2,21 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Briefcase } from "lucide-react";
+import { ArrowRight, CalendarRange, MapPin } from "lucide-react";
 import { EmployerLogo } from "@/components/features/EmployerLogo";
+import { truncateText } from "@/lib/job-post-text";
 import type { JobPost } from "@/types";
 
 type HomeJobsSectionProps = {
   jobs: JobPost[];
 };
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "short",
+  });
+}
 
 export function HomeJobsSection({ jobs }: HomeJobsSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -86,42 +94,62 @@ export function HomeJobsSection({ jobs }: HomeJobsSectionProps) {
             href={`/empleos/${job.id}`}
             className="snap-start shrink-0 basis-[240px] sm:basis-[260px] md:basis-[280px] group"
           >
-            <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-black">
-              {job.employer?.logoUrl ? (
-                <div className="absolute inset-0 bg-white p-10 transition-transform duration-500 group-hover:scale-105">
-                  <EmployerLogo logoUrl={job.employer.logoUrl} alt={job.companyName} />
-                </div>
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-6">
-                <div>
-                  <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    <Briefcase className="h-3.5 w-3.5" />
-                    Vacante
+            <div className="relative flex h-[380px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl">
+              {/* Título/empresa arriba con fondo oscuro semitransparente: siempre legible sobre cualquier logo */}
+              <div className="relative z-10 bg-gradient-to-b from-gray-950/90 via-gray-950/75 to-gray-950/40 px-4 pb-3 pt-4 text-white backdrop-blur-[2px]">
+                <h5 className="text-lg font-bold leading-tight drop-shadow-sm">{job.title}</h5>
+                <p className="mt-1 text-sm text-white/85 drop-shadow-sm">{job.companyName}</p>
+              </div>
+
+              <div className="relative min-h-0 flex-1 bg-white">
+                {job.employer?.logoUrl ? (
+                  <div className="absolute inset-0 p-8 transition-transform duration-500 group-hover:scale-105">
+                    <EmployerLogo logoUrl={job.employer.logoUrl} alt={job.companyName} />
                   </div>
-                  <h5 className="text-white font-bold text-lg leading-tight">{job.title}</h5>
-                  <p className="mt-1 text-sm text-white/80">{job.companyName}</p>
-                </div>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800" />
+                )}
+              </div>
+
+              <div className="relative z-10 space-y-2 border-t border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm">
+                <p className="inline-flex items-center gap-1.5 text-xs text-gray-600">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+                  <span className="truncate">{job.location || "Ceres"}</span>
+                  <span className="text-gray-300">·</span>
+                  <span>
+                    {job.positionsCount || 1} {(job.positionsCount || 1) === 1 ? "puesto" : "puestos"}
+                  </span>
+                </p>
+                <p className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+                  <CalendarRange className="h-3.5 w-3.5 shrink-0" />
+                  {formatDate(job.searchStartsAt)} — {formatDate(job.searchEndsAt)}
+                </p>
+                <p className="line-clamp-2 text-xs leading-relaxed text-gray-600">
+                  {truncateText(job.description || job.requirements || "", 110)}
+                </p>
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                  Más información
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </div>
             </div>
           </Link>
         ))}
 
         <Link href="/empleos" className="snap-start shrink-0 basis-[240px] sm:basis-[260px] md:basis-[280px] group">
-          <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-sm bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center">
-            <div className="text-center p-6">
-              <ArrowRight className="h-12 w-12 text-white mx-auto mb-4 group-hover:translate-x-2 transition-transform" />
-              <h5 className="text-white font-bold text-lg leading-tight">Ver toda la bolsa de trabajo</h5>
+          <div className="relative flex h-[380px] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-emerald-700 shadow-sm">
+            <div className="p-6 text-center">
+              <ArrowRight className="mx-auto mb-4 h-12 w-12 text-white transition-transform group-hover:translate-x-2" />
+              <h5 className="text-lg font-bold leading-tight text-white">Ver toda la bolsa de trabajo</h5>
             </div>
           </div>
         </Link>
       </div>
 
-      <div className="text-center mt-8">
+      <div className="mt-8 text-center">
         <Link
           href="/empleos"
-          className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           Ver todos los empleos
           <ArrowRight className="h-4 w-4" aria-hidden="true" />

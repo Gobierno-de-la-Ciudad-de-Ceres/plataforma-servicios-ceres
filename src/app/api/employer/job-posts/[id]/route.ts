@@ -48,6 +48,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       data: {
         companyName: data.companyName,
         title: data.title,
+        location: data.location,
+        positionsCount: data.positionsCount,
+        description: data.description,
         searchStartsAt: data.searchStartsAt,
         searchEndsAt: data.searchEndsAt,
         requirements: data.requirements,

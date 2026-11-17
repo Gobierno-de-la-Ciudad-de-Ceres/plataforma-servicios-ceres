@@ -1,6 +1,6 @@
 import type { JobPost, JobPostStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-
+import { JOB_DESCRIPTION_MAX, clampJobDescription } from "@/lib/job-post-text";
 import { resolvePublicUploadUrl } from "@/lib/public-upload-url";
 
 export class EmployerJobsError extends Error {
@@ -18,6 +18,9 @@ export class EmployerJobsError extends Error {
 export type JobPostInput = {
   companyName: string;
   title: string;
+  location: string;
+  positionsCount: number | string;
+  description: string;
   searchStartsAt: string;
   searchEndsAt: string;
   requirements: string;
@@ -48,12 +51,26 @@ export function validateTaxId(taxIdType: "cuit" | "dni", taxId: string) {
 export function normalizeJobPostInput(input: JobPostInput) {
   const companyName = input.companyName?.trim() || "";
   const title = input.title?.trim() || "";
+  const location = input.location?.trim() || "";
+  const description = clampJobDescription(input.description || "");
   const requirements = input.requirements?.trim() || "";
   const contactEmail = normalizeOptionalContact(input.contactEmail);
   const contactPhone = normalizeOptionalContact(input.contactPhone);
+  const positionsCount = Number.parseInt(String(input.positionsCount ?? ""), 10);
 
   if (!companyName) throw new EmployerJobsError("El nombre de la empresa es obligatorio");
   if (!title) throw new EmployerJobsError("La vacante es obligatoria");
+  if (!location) throw new EmployerJobsError("La ubicación es obligatoria");
+  if (!Number.isFinite(positionsCount) || positionsCount < 1) {
+    throw new EmployerJobsError("La cantidad de puestos debe ser al menos 1");
+  }
+  if (positionsCount > 999) {
+    throw new EmployerJobsError("La cantidad de puestos no puede superar 999");
+  }
+  if (!description) throw new EmployerJobsError("La descripción del puesto es obligatoria");
+  if (description.length > JOB_DESCRIPTION_MAX) {
+    throw new EmployerJobsError(`La descripción no puede superar ${JOB_DESCRIPTION_MAX} caracteres`);
+  }
   if (!requirements) throw new EmployerJobsError("Los requisitos son obligatorios");
   if (!input.searchStartsAt || !input.searchEndsAt) {
     throw new EmployerJobsError("El período de búsqueda es obligatorio");
@@ -83,6 +100,9 @@ export function normalizeJobPostInput(input: JobPostInput) {
   return {
     companyName,
     title,
+    location,
+    positionsCount,
+    description,
     requirements,
     contactEmail,
     contactPhone,
@@ -128,6 +148,9 @@ export function serializeJobPost(
     id: post.id,
     companyName: post.companyName,
     title: post.title,
+    location: post.location,
+    positionsCount: post.positionsCount,
+    description: post.description,
     searchStartsAt: post.searchStartsAt.toISOString(),
     searchEndsAt: post.searchEndsAt.toISOString(),
     requirements: post.requirements,
@@ -158,6 +181,8 @@ export async function listPublicJobPosts(options?: { query?: string; limit?: num
           OR: [
             { title: { contains: query, mode: "insensitive" as const } },
             { companyName: { contains: query, mode: "insensitive" as const } },
+            { location: { contains: query, mode: "insensitive" as const } },
+            { description: { contains: query, mode: "insensitive" as const } },
             { requirements: { contains: query, mode: "insensitive" as const } },
           ],
         }

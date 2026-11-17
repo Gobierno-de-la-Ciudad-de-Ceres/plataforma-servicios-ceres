@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { EmployerLogo } from "@/components/features/EmployerLogo";
 import { resolveStoredUploadValue, uploadFile } from "@/lib/api/uploads";
+import { JOB_DESCRIPTION_MAX } from "@/lib/job-post-text";
 import { resolvePublicUploadUrl } from "@/lib/public-upload-url";
 import type { JobPost } from "@/types";
 
@@ -28,6 +29,9 @@ type EmployerMe = {
 type FormState = {
   companyName: string;
   title: string;
+  location: string;
+  positionsCount: string;
+  description: string;
   searchStartsAt: string;
   searchEndsAt: string;
   requirements: string;
@@ -38,6 +42,9 @@ type FormState = {
 const emptyForm: FormState = {
   companyName: "",
   title: "",
+  location: "Ceres",
+  positionsCount: "1",
+  description: "",
   searchStartsAt: "",
   searchEndsAt: "",
   requirements: "",
@@ -177,6 +184,9 @@ export default function DashboardEmpleosPage() {
     setForm({
       companyName: item.companyName,
       title: item.title,
+      location: item.location || "Ceres",
+      positionsCount: String(item.positionsCount || 1),
+      description: item.description || "",
       searchStartsAt: toDateInput(item.searchStartsAt),
       searchEndsAt: toDateInput(item.searchEndsAt),
       requirements: item.requirements,
@@ -365,6 +375,28 @@ export default function DashboardEmpleosPage() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
+                  <Label>Ubicación *</Label>
+                  <Input
+                    value={form.location}
+                    onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
+                    required
+                    placeholder="Ej. Ceres, Santa Fe"
+                  />
+                </div>
+                <div>
+                  <Label>Cantidad de puestos *</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={999}
+                    value={form.positionsCount}
+                    onChange={(e) => setForm((p) => ({ ...p, positionsCount: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
                   <Label>Inicio de la búsqueda *</Label>
                   <Input
                     type="date"
@@ -382,6 +414,25 @@ export default function DashboardEmpleosPage() {
                     required
                   />
                 </div>
+              </div>
+              <div>
+                <Label>Descripción del puesto * (máx. {JOB_DESCRIPTION_MAX})</Label>
+                <Textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm((p) => ({
+                      ...p,
+                      description: e.target.value.slice(0, JOB_DESCRIPTION_MAX),
+                    }))
+                  }
+                  required
+                  rows={4}
+                  maxLength={JOB_DESCRIPTION_MAX}
+                  placeholder="Breve descripción de tareas, jornada, condiciones, etc."
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {form.description.length}/{JOB_DESCRIPTION_MAX} caracteres
+                </p>
               </div>
               <div>
                 <Label>Requisitos para el puesto *</Label>
@@ -447,6 +498,8 @@ export default function DashboardEmpleosPage() {
                     </div>
                     <p className="text-sm text-gray-600">{item.companyName}</p>
                     <p className="mt-1 text-xs text-gray-500">
+                      {item.location || "Ceres"} · {item.positionsCount || 1}{" "}
+                      {(item.positionsCount || 1) === 1 ? "puesto" : "puestos"} ·{" "}
                       {new Date(item.searchStartsAt).toLocaleDateString("es-AR")} —{" "}
                       {new Date(item.searchEndsAt).toLocaleDateString("es-AR")}
                     </p>

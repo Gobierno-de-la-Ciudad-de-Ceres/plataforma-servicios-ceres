@@ -34,6 +34,9 @@ export interface JobPost {
   id: string;
   companyName: string;
   title: string;
+  location: string;
+  positionsCount: number;
+  description: string;
   searchStartsAt: string;
   searchEndsAt: string;
   requirements: string;

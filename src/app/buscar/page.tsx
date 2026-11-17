@@ -121,6 +121,10 @@ export default async function BuscarPage({ searchParams }: PageProps) {
                 >
                   <p className="font-semibold text-gray-900">{job.title}</p>
                   <p className="text-sm text-gray-600">{job.companyName}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {job.location || "Ceres"} · {job.positionsCount || 1}{" "}
+                    {(job.positionsCount || 1) === 1 ? "puesto" : "puestos"}
+                  </p>
                 </Link>
               ))}
             </div>
