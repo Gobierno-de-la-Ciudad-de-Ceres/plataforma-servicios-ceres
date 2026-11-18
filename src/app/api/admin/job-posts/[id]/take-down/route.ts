@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       },
     });
 
-    return NextResponse.json({ success: true, item: serializeJobPost(updated) });
+    return NextResponse.json({ success: true, data: serializeJobPost(updated) });
   } catch (error) {
     console.error("admin job-posts take-down:", error);
     return NextResponse.json(
